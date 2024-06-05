@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create poll</title>
+    <!-- <link href= "{% static 'css/login.css' %}" rel="stylesheet"> -->
+</head>
+<body>
+    <div class="create-poll__card">
+      <form method="POST" class="login__form">
+          {% csrf_token %}
+          <h3 class="login__logo">Создание опроса</h3>
+            <!-- <label for="floatingInput">Почта</label>
+            <input type="Text" name="email" class="login__input" id="floatingInput" placeholder="user@mail.ru">
+            <label for="floatingPassword">Пароль</label>
+            <input type="password" name="password" class="login__input" id="floatingPassword" placeholder="Пароль"> -->
+          <button class="buy">Отправить</button>
+      </form>
+    </div>
+</body>
+</html>
