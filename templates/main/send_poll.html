@@ -4,19 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <title>Create poll</title>
-    <!-- <link href= "{% static 'css/login.css' %}" rel="stylesheet"> -->
+    <link href= "{% static 'css/create_poll.css' %}" rel="stylesheet">
 </head>
 <body>
     <div class="create-poll__card">
       <form method="POST" class="create-poll__form">
           {% csrf_token %}
-          <h3 class="login__logo">Создание опроса</h3>
-            <!-- <label for="floatingInput">Почта</label>
-            <input type="Text" name="email" class="login__input" id="floatingInput" placeholder="user@mail.ru">
-            <label for="floatingPassword">Пароль</label>
-            <input type="password" name="password" class="login__input" id="floatingPassword" placeholder="Пароль"> -->
-          <input type="text" placeholder="Стоимость опроса">
-          <button class="buy">Отправить опрос</button>
+          <h3 class="create__logo">Создание опроса</h3>
+          <input type="text" name="poll_name" placeholder="Название опроса">
+          <input type="text" name="option1" placeholder="Вариант ответа 1">
+          <input type="text" name="option2" placeholder="Вариант ответа 2">
+          <input type="text" name="option3" placeholder="Вариант ответа 3">
+          <input type="text" name="option4" placeholder="Вариант ответа 4">
+          <input type="text" name="option5" placeholder="Вариант ответа 5">
+          <input type="text" name="option6" placeholder="Вариант ответа 6">
+          <input type="text" name="option7" placeholder="Вариант ответа 7">
+          <input type="text" name="option8" placeholder="Вариант ответа 8">
+          <input type="text" name="option9" placeholder="Вариант ответа 9">
+          <input type="text" name="option10" placeholder="Вариант ответа 10">
+          <input type="text" name="correct_option" placeholder="Номер верного варианта ответа">
+          <input type="text" name="points" placeholder="Стоимость опроса">
+          <button class="send-poll__button" name="send-poll__button">Отправить опрос</button>
+          <button class="send-leaderboard__button" name="send-leaderboard__button">Отправить таблицу лидеров</button>
       </form>
     </div>
 </body>

@@ -3,10 +3,23 @@ from django.db import models
 # Create your models here.
 
 class Poll(models.Model):
-    points = models.IntegerField()
-    telegram_id = models.IntegerField()
+    poll_telegram_id = models.BigIntegerField()
+    poll_name = models.CharField(max_length=128)
+    points = models.PositiveIntegerField()
+
+    def __repr__(self):
+            return self.poll_name
+
 
 class User(models.Model):
+    user_telegram_id = models.BigIntegerField()
     username = models.CharField(max_length=64)
-    telegram_id = models.IntegerField()
-    total_points = models.IntegerField()
+    total_points = models.PositiveIntegerField()
+
+    def __repr__(self):
+        return self.poll_name
+
+
+class PollAnswer(models.Model):
+    poll = models.ForeignKey('Poll', on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey('User', on_delete=models.CASCADE)

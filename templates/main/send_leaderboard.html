@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create poll</title>
+    <link href= "{% static 'css/send_leaderboard.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="send-leaderboard__card">
+      <form method="POST" class="create-poll__form">
+          {% csrf_token %}
+          <h3 class="create__logo">Отправить таблицу лидеров</h3>
+          <button class="send-leaderboard__button" name="send-leaderboard__button">Отправить таблицу лидеров</button>
+      </form>
+    </div>
+</body>
+</html>
