@@ -4,7 +4,7 @@ from django.views.generic import View
 from django.conf import settings as settings
 import json
 import requests
-from .models import Poll, User
+from .models import Poll, User, PollAnswer
 MAX_POLL_OPTIONS = 10
 
 telegram_channel_id = "-4264012790"
@@ -37,27 +37,70 @@ class CreatePollView(View):
                 url=f"https://api.telegram.org/bot{settings.BOT_TOKEN}/sendpoll",
                 params=poll_params
             )
-            
+
             response_info = response.json()
             print(response_info)
             
             if response.status_code == 200:
-                poll_obj = Poll.objects.create(
-                    poll_telegram_id = response_info['result']['poll']['id'],
-                    points = points,
-                    poll_name = poll_name
-                )
-                poll_obj.save()
+                Poll.objects.create(
+                    poll_telegram_id = response.json()["result"]["poll"]["id"],
+                    question=poll_name,
+                    points=points,
+                    correct_option_id=right_answer
+                ).save()
 
             return HttpResponse("ok")
         elif 'send-leaderboard__button' in request.POST:
             response = requests.get(url=f"https://api.telegram.org/bot{settings.BOT_TOKEN}/getUpdates")
             updates = response.json()['result']
-            for update in updates:
-                print(update['poll_answer'])
-                print()
-            # print(updates)
-            return HttpResponse("ok")
+            poll_answer_updates = [update["poll_answer"] for update in updates if "poll_answer" in update]
+            # print(poll_answer_updates)
+
+            for answer_update in poll_answer_updates:
+                # Проверка наличия Telegram пользователя в базе
+                try:
+                    user = User.objects.get(user_telegram_id=answer_update["user"]["id"])
+                except:
+                    user = User.objects.create(
+                        user_telegram_id=answer_update["user"]["id"],
+                        username=answer_update["user"]["username"],
+                        total_points=0
+                    )
+                    user.save()
+                # Проверка наличия опроса в базе
+                try:
+                    poll = Poll.objects.get(poll_telegram_id=answer_update["poll_id"])
+                except:
+                    continue
+                # Проверка, был ли уже обработан голос пользователя
+                try:
+                    poll_answer = PollAnswer.objects.get(user=user, poll=poll)
+                    if poll_answer:
+                        continue
+                except:
+                    if answer_update["option_ids"][0] == poll.correct_option_id:
+                        user.total_points += poll.points
+                        user.save()
+                    PollAnswer.objects.create(
+                        user=user,
+                        poll=poll
+                    ).save()
+
+            # Отправка списка лидеров
+            users = User.objects.order_by("-total_points")
+            message_text = "Таблица лидеров:\n"
+            for i, user in enumerate(users):
+                message_text += f"{i+1}: {user.username} - {user.total_points}\n"
+            leaderboard_params = {
+                "chat_id": telegram_channel_id,
+                "text": message_text
+            }
+            response = requests.get(
+                url=f"https://api.telegram.org/bot{settings.BOT_TOKEN}/sendMessage",
+                params=leaderboard_params
+            )
+            print(response.json())
+            return HttpResponse("Таблици лидеров отправлена в группу")
     
 
 # class SendLeaderboard(View):

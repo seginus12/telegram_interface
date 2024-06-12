@@ -4,8 +4,9 @@ from django.db import models
 
 class Poll(models.Model):
     poll_telegram_id = models.BigIntegerField()
-    poll_name = models.CharField(max_length=128)
+    question = models.CharField(max_length=128)
     points = models.PositiveIntegerField()
+    correct_option_id = models.PositiveIntegerField()
 
     def __repr__(self):
             return self.poll_name
