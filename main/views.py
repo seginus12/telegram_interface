@@ -7,7 +7,6 @@ import requests
 from .models import Poll, User, PollAnswer
 MAX_POLL_OPTIONS = 10
 
-telegram_channel_id = "-4264012790"
 
 class CreatePollView(View):
     def get(self, request):
@@ -25,7 +24,7 @@ class CreatePollView(View):
             poll_name = request.POST.get('poll_name')
             right_answer = int(request.POST.get('correct_option')) - 1
             poll_params = {
-                "chat_id": telegram_channel_id,
+                "chat_id": settings.TELEGRAM_GROUP_ID,
                 "question": poll_name,
                 "options": json.dumps(poll_options),
                 "is_anonymous": False,
@@ -92,7 +91,7 @@ class CreatePollView(View):
             for i, user in enumerate(users):
                 message_text += f"{i+1}: {user.username} - {user.total_points}\n"
             leaderboard_params = {
-                "chat_id": telegram_channel_id,
+                "chat_id": settings.TELEGRAM_GROUP_ID,
                 "text": message_text
             }
             response = requests.get(
