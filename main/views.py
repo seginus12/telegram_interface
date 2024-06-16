@@ -5,6 +5,7 @@ from django.conf import settings as settings
 import json
 import requests
 from .models import Poll, User, PollAnswer
+from .utils import get_updates, read_updates
 MAX_POLL_OPTIONS = 10
 
 
@@ -50,42 +51,8 @@ class CreatePollView(View):
 
             return HttpResponse("ok")
         elif 'send-leaderboard__button' in request.POST:
-            response = requests.get(url=f"https://api.telegram.org/bot{settings.BOT_TOKEN}/getUpdates")
-            updates = response.json()['result']
-            poll_answer_updates = [update["poll_answer"] for update in updates if "poll_answer" in update]
-            # print(poll_answer_updates)
-
-            for answer_update in poll_answer_updates:
-                # Проверка наличия Telegram пользователя в базе
-                try:
-                    user = User.objects.get(user_telegram_id=answer_update["user"]["id"])
-                except:
-                    user = User.objects.create(
-                        user_telegram_id=answer_update["user"]["id"],
-                        username=answer_update["user"]["username"],
-                        total_points=0
-                    )
-                    user.save()
-                # Проверка наличия опроса в базе
-                try:
-                    poll = Poll.objects.get(poll_telegram_id=answer_update["poll_id"])
-                except:
-                    continue
-                # Проверка, был ли уже обработан голос пользователя
-                try:
-                    poll_answer = PollAnswer.objects.get(user=user, poll=poll)
-                    if poll_answer:
-                        continue
-                except:
-                    if answer_update["option_ids"][0] == poll.correct_option_id:
-                        user.total_points += poll.points
-                        user.save()
-                    PollAnswer.objects.create(
-                        user=user,
-                        poll=poll
-                    ).save()
-
-            # Отправка списка лидеров
+            get_updates()
+            read_updates()
             users = User.objects.order_by("-total_points")
             message_text = "Таблица лидеров:\n"
             for i, user in enumerate(users):

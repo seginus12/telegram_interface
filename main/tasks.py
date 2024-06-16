@@ -5,6 +5,8 @@ import shutil
 
 
 
+
 @app.task()
-def get_updates():
-    pass
+def check_updates():
+    from .utils import get_updates
+    get_updates()

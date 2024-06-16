@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -128,6 +129,20 @@ STATICFILES_DIRS = [
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+
+
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+CELERY_BEAT_SCHEDULE = {
+    'check_updates': {
+        'task': 'main.tasks.check_updates',
+        'schedule': timedelta(hours=1),
+        'options': {
+            'expires': 15.0,
+            },
+    }
+}
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 BOT_TOKEN = "7395412269:AAHuuaeAaXcjBTpDyUbt5V7YemXD2dj3vps"
